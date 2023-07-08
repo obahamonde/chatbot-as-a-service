@@ -1,0 +1,1 @@
+gunicorn main:app -k main.GunicornAiohttpWorker -b 0.0.0.0:8080 --reload
