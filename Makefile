@@ -7,4 +7,4 @@ build:
 run:
 	docker run -v $(PWD):/app -d -p 80:8080 app
 
-.PHONY: run build
+.PHONY: run build dev

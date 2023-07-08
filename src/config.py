@@ -17,6 +17,7 @@ class Env(BaseSettings):
     AWS_ACCESS_KEY_ID: str = Data(..., env="AWS_ACCESS_KEY_ID")
     AWS_SECRET_ACCESS_KEY:str = Data(..., env="AWS_SECRET_ACCESS_KEY")
     REGION_NAME:str = Data(..., env="REGION_NAME")
+    AWS_LAMBDA_ROLE:str = Data(..., env="AWS_LAMBDA_ROLE")
     
     def __init__(self):
         super().__init__()

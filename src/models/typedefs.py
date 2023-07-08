@@ -5,6 +5,8 @@ from uuid import uuid4
 from aiofauna import *
 from multidict import CIMultiDict, CIMultiDictProxy, MultiDict, MultiDictProxy
 
+from ..config import env
+
 T = TypeVar("T")
 Headers = Union[
     CIMultiDictProxy, CIMultiDict, MultiDictProxy, MultiDict, Dict[str, str]
@@ -24,8 +26,8 @@ class Item(BaseModel):
 class Function(BaseModel):
     name: str = Field(..., alias="FunctionName", index=True)
     runtime: str = Field(default="python3.9", alias="Runtime")
-    role: str = Field(..., alias="Role")
-    handler: str = Field(..., alias="Handler")
+    role: str = Field(env.AWS_LAMBDA_ROLE, alias="Role")
+    handler: str = Field("main.handler", alias="Handler")
     code: Item = Field(..., alias="Code")
     timeout: int = Field(default=3, alias="Timeout")
     memory: int = Field(default=128, alias="MemorySize")
