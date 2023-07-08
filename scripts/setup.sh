@@ -12,7 +12,7 @@ apt install -y \
     gnupg \
     lsb-release \
     software-properties-common && \
-curl https://docker.io | bash && \
+curl https://get.docker.com/ | bash && \
 #NVM
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash && \
 source ~/.bashrc && \
