@@ -2,3 +2,4 @@
 .serverless
 docs
 .venv
+__pycache__

@@ -23,6 +23,3 @@ class GunicornAiohttpWorker(GunicornWebWorker):
             for server in servers:
                 await server.wait_closed()
         await super().close()
-
-   
-   

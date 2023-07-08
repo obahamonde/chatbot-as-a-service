@@ -17,9 +17,6 @@ RUN pip3 install -r requirements.txt
 
 COPY . .
 
+# gunicorn main:app -k main.GunicornAiohttpWorker -b 0.0.0.0:8080 --reload
 
-RUN ["chmod", "+x", "scripts/run.sh"]
-
-# Path: /app
-
-CMD ["/app/scripts/run.sh"]
+CMD ["gunicorn", "main:app", "-k", "main.GunicornAiohttpWorker", "-b", "0.0.0.0:8080", "--reload"]
