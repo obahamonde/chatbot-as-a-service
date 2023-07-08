@@ -40,26 +40,23 @@ def bootstrap(app_:AioFauna=app):
     @app_.middleware
     async def lead_gen_middleware(request: Request, call_next: Callable) -> Response:
         if request.url.path.startswith("/api"):
-            response = await call_next(request)
             lead_id = request.cookies.get("lead_id", None)
             client = request.remote
             if client is None:
-                return response
+                return await call_next(request)
             geo_data = ip(client).json["raw"]
             now = datetime.now().timestamp()
             if lead_id is None:
                 lead_id = uuid4().hex
+                response = await call_next(request)
                 response.set_cookie("lead_id", lead_id)
-            lead = Lead(ipaddr=client, lead_id=lead_id, geo_data=geo_data)
-            if isinstance(lead.visits, list):
-                lead.visits.append(now)
             else:
-                lead.visits = [now]
+                response = await call_next(request)
+
+            lead = Lead(lead_id=lead_id, ipddr=client, geo_data=geo_data, last_seen=now)
             await lead.save()
             return response
-        return await call_next(request)   
-
-    app_.static()
-
+        
+        return await call_next(request)
+    
     return app_
-

@@ -19,7 +19,7 @@ class OpenAIEmbeddingRequest(BaseModel):
 
     model: str = Field(default="text-embedding-ada-002")
     input: str = Field(..., description="The text to embed")
-    namespace: str = Field(..., description="The namespace of the embedding.")
+    namespace: str = Field(default="default", description="The namespace of the embedding.")
 
 
 class OpenAIEmbeddingObject(BaseModel):
@@ -280,7 +280,6 @@ class OpenAIChatCompletionRequest(BaseModel):
 
     def chain(self):
         return LeadsTemplate(self)
-
 
 class OpenAIPineConeRequest(BaseModel):
     """

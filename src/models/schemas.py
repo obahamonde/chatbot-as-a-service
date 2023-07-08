@@ -89,13 +89,13 @@ class Upload(FaunaModel):
 
 
 class Lead(FaunaModel):
-    email: Optional[str] = Field(None)
-    name: Optional[str] = Field(None)
+    email: Optional[str] = Field(default=None)
+    name: Optional[str] = Field(default=None)
     source: LeadSource = Field(default="website")
     status: LeadStatus = Field(default="new")
     lead_id: str = Field(..., unique=True)
     ipaddr : str = Field(..., index=True)
-    visits: Optional[List[float]] = Field(default=None)
+    last_seen: float = Field(..., index=True)
     geo_data: Optional[dict] = Field(default=None)
 
 

@@ -18,15 +18,7 @@ def LeadsTemplate(request):
     The user question or inquiry is: {request.prompt}.
     The most similar answers previously made to similar questions (a.k.a. context) are:
     """
-    body = ""
-    for i, ctx in enumerate(request.context):
-        for k, v in ctx.items():
-            body += f"""
-            {i}. Text
-                    {k} 
-                 Score
-                    {v}
-            """
+    body = request.context
     footer = f"""
     It's up to you to decide which answer is the most appropriate to the user question or inquiry.
     The answer to the user question or inquiry is:
