@@ -10,6 +10,7 @@ lxml = "*"
 gunicorn = "*"
 geocoder = "*"
 boto3 = "*"
+aiohttp-cors = "*"
 
 [dev-packages]
 

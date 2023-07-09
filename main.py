@@ -1,13 +1,29 @@
+import aiohttp_cors
 from aiofauna import *
 from aiohttp import web
 from aiohttp.worker import GunicornWebWorker
-from dotenv import load_dotenv
+from dotenv import load_dotenv=
 
 load_dotenv()
 from src import app
 from src.apis import *
 from src.models import *
 from src.tools import *
+
+cors = aiohttp_cors.setup(app, defaults={
+    "*": aiohttp_cors.ResourceOptions(
+        allow_credentials=True,
+        expose_headers="*",
+        allow_headers="*",
+    )
+})
+
+for route in list(app.router.routes()):
+    cors.add(route)
+
+
+
+
 
 """
 class GunicornAiohttpWorker(GunicornWebWorker):
