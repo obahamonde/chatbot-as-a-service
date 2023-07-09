@@ -1,6 +1,5 @@
-import aiohttp_cors
+import aiohttp.web
 from aiofauna import *
-from aiohttp import web
 from aiohttp.worker import GunicornWebWorker
 from dotenv import load_dotenv
 
@@ -10,37 +9,17 @@ from src.apis import *
 from src.models import *
 from src.tools import *
 
-cors = aiohttp_cors.setup(app, defaults={
-    "*": aiohttp_cors.ResourceOptions(
-        allow_credentials=True,
-        expose_headers="*",
-        allow_headers="*",
-    )
-})
 
-for route in list(app.router.routes()):
-    cors.add(route)
-
-
-
-
-
-"""
 class GunicornAiohttpWorker(GunicornWebWorker):
-    def make_handler(self:Type, app:web.Application=app, *args, **kwargs):
+    def make_handler(self, app, *args, **kwargs):
         return app.make_handler(*args, **kwargs)
 
     async def close(self):
         if self.servers is not None:
             servers = self.servers
             self.servers = None
-            for server in servers: # type: ignore
+            for server in servers:
                 server.close()
-            for server in servers: # type: ignore
+            for server in servers:
                 await server.wait_closed()
-        await super().close() # type: ignore
-"""
-        
-from aiohttp import web
-
-web.run_app(app, port=8080, host="0.0.0.0")
+        await super().close()

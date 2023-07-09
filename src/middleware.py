@@ -1,10 +1,25 @@
+import aiohttp_cors
+from aiofauna import dumps
+from aiohttp import web
 from geocoder import ip
 
 from .handlers import *
 
 
-def bootstrap(app_:AioFauna=app):
+def setup_cors(application:web.Application):
+    """CORS setup"""
+    cors = aiohttp_cors.setup(application, defaults={
+        "*": aiohttp_cors.ResourceOptions(
+            allow_credentials=True,
+            expose_headers="*",
+            allow_headers="*"
+        )
+    })
+    for route in list(application.router.routes()):
+        cors.add(route)
+    return application
 
+def bootstrap():
     @app.on_event("startup")
     async def startup(_):
         try:
@@ -27,12 +42,13 @@ def bootstrap(app_:AioFauna=app):
                 status=200
             )
         except AssertionError:
-            return HTTPException(text=json.dumps({
+            return HTTPException(text=dumps({
                 "status":"error",
                 "message": "Invalid token"
             }))
-        except Exception as e:
-            return HTTPException(text=json.dumps({
+        except Exception as exc:
+            app.logger.info(exc)
+            return HTTPException(text=dumps({
                 "status":"error",
                 "message": str(e)
             }))
@@ -59,4 +75,4 @@ def bootstrap(app_:AioFauna=app):
         
         return await call_next(request)
     
-    return app_
+    return setup_cors(app)

@@ -5,3 +5,6 @@ gunicorn
 geocoder
 boto3
 aiohttp-cors
+langchain
+openai
+pinecone-client
