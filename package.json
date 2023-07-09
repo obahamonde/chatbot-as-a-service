@@ -1,5 +1,0 @@
-{
-    "scripts":{
-        "fetch":"aws s3 sync s3://aiofauna /static --delete"
-    }
-}

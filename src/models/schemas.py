@@ -68,9 +68,15 @@ class Message(FaunaModel):
     namespace: str = Field(default="default")
     
 class Organization(FaunaModel):
+    """
+    Organization
+    - owner: User
+    - name: str
+    - members: List[User]
+    - chatbots: List[Chatbot]
+    """
     owner:User = Field(...)
     name: str = Field(..., index=True)
-    description: str = Field(...)
     members: List[User] = Field(default_factory=list)
     chatbots: List[Chatbot] = Field(default_factory=list)
     

@@ -1,14 +1,15 @@
 import asyncio
-import json
 import re
 from typing import List
 
+from aiofauna import WebSocketResponse
 from aiohttp import ClientSession
 from bs4 import BeautifulSoup
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field  # pylint: disable=no-name-in-module
 
 
 class Page(BaseModel):
+    """A page from a sitemap"""
     title: str = Field(..., description="Title of the page")
     url: str = Field(..., description="Url of the page")
     content: str = Field(..., description="Content of the page")
@@ -50,18 +51,20 @@ class Page(BaseModel):
 
 
 class SiteMapTool:
-    def __init__(self, max_connections: int = 1000):
+    
+    def __init__(self, ws:WebSocketResponse, max_connections: int = 1000):
         self.urls: List[str] = []
         self.pages: List[Page] = []
         self.semaphore = asyncio.Semaphore(max_connections)
-
+        self.ws = ws
+        
     async def fetch_loc(self, url: str):
         async with self.semaphore, ClientSession() as session:
             async with session.get(url) as response:
                 try:
                     assert response.status == 200
                     html = (await response.text()).strip()
-                    soup = BeautifulSoup(html, "lxml")
+                    soup = BeautifulSoup(html, features="xml")
                 except:
                     return self.urls
                 # Check for nested sitemap (sitemaps that point to other sitemaps)
@@ -99,7 +102,7 @@ class SiteMapTool:
                     self.pages.append(page)
                     await asyncio.sleep(0.1)
                     progress = len(self.pages) / len(self.urls)
-                    print(f"{progress:.2%} complete")
+                    await self.ws.send_json({"progress": progress*100})
                     return page
 
     async def run(self, url: str):
@@ -110,11 +113,11 @@ class SiteMapTool:
             except:
                 await asyncio.sleep(0.1)
                 progress = len(self.pages) / len(self.urls)
-                print(f"{progress:.2%} complete")
+                await self.ws.send_json({"progress": progress*100})
                 continue
             finally:
                 await asyncio.sleep(0.1)
                 progress = len(self.pages) / len(self.urls)
-                print(f"{progress:.2%} complete")
+                await self.ws.send_json({"progress": progress*100})
 
         return self.pages

@@ -37,7 +37,7 @@ def bootstrap(app_:AioFauna=app):
                 "message": str(e)
             }))
         
-    @app_.middleware
+    #@app_.middleware
     async def lead_gen_middleware(request: Request, call_next: Callable) -> Response:
         if request.url.path.startswith("/api"):
             lead_id = request.cookies.get("lead_id", None)

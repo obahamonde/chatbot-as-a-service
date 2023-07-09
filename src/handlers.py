@@ -3,11 +3,12 @@ import asyncio
 from aiofauna import AioFauna, Response
 
 from .apis import *
+from .models import *
 from .tools import *
 
 app = AioFauna()
 
-@app.post("/chatbot")
+@app.post("/api/chatbot")
 async def main(request: OpenAIEmbeddingRequest):
     user_vector = (await openai.post_embeddings(request)).data[0].embedding
     meta = (await pinecone.query(
@@ -55,8 +56,8 @@ async def main(request: OpenAIEmbeddingRequest):
     )
     return text
 
-async def get_embeddings(namespace: str):
-    pages = await sitemap_tool.run(namespace)
+async def get_embeddings(namespace: str, tool:SiteMapTool):
+    pages = await tool.run(namespace)
     requests = [
         OpenAIEmbeddingRequest(input=page.content, namespace=namespace)
         for page in pages
@@ -71,19 +72,22 @@ async def get_embeddings(namespace: str):
     ]
     return vectors
 
-async def ingest_data(namespace: str):
-    vectors = await get_embeddings(namespace)
-    data = await asyncio.gather(
-        *[pinecone.upsert(namespace, vector) for vector in vectors]
-    )
-    return data
-
-@app.get("/chatbot/ingest")
-async def ingest(namespace: str):
-    return await ingest_data(namespace)
-
-@app.post("/audio")
+@app.websocket("/api/chatbot/ingest")
+async def ingest_organization_website(namespace: str, ref:str, websocket: WebSocketResponse):
+    """
+    Ingests a website and creates a new organization.
+    """
+    user = await User.get(ref)
+    assert isinstance(user, User)        
+    app.logger.info(user.json())
+    tool = SiteMapTool(websocket)
+    await tool.run(namespace)
+    vectors = await get_embeddings(namespace, tool)
+    await asyncio.gather(*[pinecone.upsert(namespace, vector) for vector in vectors])
+    await websocket.close()
+@app.post("/api/audio")
 async def audio(text:str):
     polly = Polly.from_text(text)
     return Response(body=polly.get_audio(), content_type="application/octet-stream")
 
+URL = "https://www.ransa.biz"
