@@ -2,7 +2,7 @@ import aiohttp_cors
 from aiofauna import *
 from aiohttp import web
 from aiohttp.worker import GunicornWebWorker
-from dotenv import load_dotenv=
+from dotenv import load_dotenv
 
 load_dotenv()
 from src import app

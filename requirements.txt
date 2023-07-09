@@ -4,3 +4,4 @@ lxml
 gunicorn
 geocoder
 boto3
+aiohttp-cors
